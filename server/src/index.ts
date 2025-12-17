@@ -9,6 +9,17 @@ const port = Number(process.env.PORT) || 3001;
 const app = express();
 app.use(express.json());
 
+// CORS for cross-origin requests
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // Health check endpoint
 app.get('/health', (_, res) => {
   res.json({ status: 'ok' });
