@@ -56,7 +56,8 @@ const gameServer = new Server({
 // Register game room
 gameServer.define('game', GameRoom);
 
-httpServer.listen(port, () => {
-  console.log(`🎮 Game server running on http://localhost:${port}`);
-  console.log(`📡 WebSocket available at ws://localhost:${port}`);
+httpServer.listen(port, '0.0.0.0', () => {
+  console.log(`🎮 Game server running on port ${port}`);
+  console.log(`📡 WebSocket available`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
