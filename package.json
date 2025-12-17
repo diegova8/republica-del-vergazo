@@ -1,5 +1,8 @@
 {
   "name": "republica-del-vergazo",
+  "version": "0.1.0",
+  "description": "2D multiplayer melee fighting game with 8-bit pixel art style",
+  "license": "MIT",
   "private": true,
   "workspaces": [
     "client",
