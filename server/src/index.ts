@@ -32,20 +32,39 @@ const clientPath = path.resolve(__dirname, '../../client/dist');
 console.log('📁 Serving static files from:', clientPath);
 
 // Check if client build exists
-if (fs.existsSync(clientPath)) {
+const indexPath = path.join(clientPath, 'index.html');
+const clientExists = fs.existsSync(indexPath);
+console.log('📄 Index.html exists:', clientExists, indexPath);
+
+if (clientExists) {
   app.use(express.static(clientPath));
 
   // SPA fallback - serve index.html for all non-API routes
-  app.get('*', (req, res, next) => {
-    // Skip API and WebSocket routes
-    if (req.path === '/health' || req.headers.upgrade === 'websocket') {
-      return next();
-    }
-    res.sendFile(path.join(clientPath, 'index.html'));
+  app.get('*', (req, res) => {
+    res.sendFile(indexPath, (err) => {
+      if (err) {
+        console.error('Error serving index.html:', err);
+        res.status(500).send('Error loading game');
+      }
+    });
   });
 } else {
   console.log('⚠️ Client build not found at', clientPath);
+  // Fallback route when no client build
+  app.get('/', (_, res) => {
+    res.send(`
+      <h1>Republica del Vergazo</h1>
+      <p>Server is running but client build not found.</p>
+      <p>Path checked: ${indexPath}</p>
+    `);
+  });
 }
+
+// Error handler
+app.use((err: any, _req: any, res: any, _next: any) => {
+  console.error('Express error:', err);
+  res.status(500).json({ error: 'Internal server error' });
+});
 
 const httpServer = createServer(app);
 
