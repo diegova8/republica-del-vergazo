@@ -3,6 +3,7 @@ import { WebSocketTransport } from '@colyseus/ws-transport';
 import express from 'express';
 import { createServer } from 'http';
 import path from 'path';
+import fs from 'fs';
 import { GameRoom } from './rooms/GameRoom';
 
 const port = Number(process.env.PORT) || 3001;
@@ -27,16 +28,24 @@ app.get('/health', (_, res) => {
 });
 
 // Serve static client files in production
-const clientPath = path.join(__dirname, '../../client/dist');
-app.use(express.static(clientPath));
+const clientPath = path.resolve(__dirname, '../../client/dist');
+console.log('📁 Serving static files from:', clientPath);
 
-// SPA fallback - serve index.html for all non-API routes
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/colyseus') || req.path === '/health') {
-    return next();
-  }
-  res.sendFile(path.join(clientPath, 'index.html'));
-});
+// Check if client build exists
+if (fs.existsSync(clientPath)) {
+  app.use(express.static(clientPath));
+
+  // SPA fallback - serve index.html for all non-API routes
+  app.get('*', (req, res, next) => {
+    // Skip API and WebSocket routes
+    if (req.path === '/health' || req.headers.upgrade === 'websocket') {
+      return next();
+    }
+    res.sendFile(path.join(clientPath, 'index.html'));
+  });
+} else {
+  console.log('⚠️ Client build not found at', clientPath);
+}
 
 const httpServer = createServer(app);
 
