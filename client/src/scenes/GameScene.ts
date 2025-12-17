@@ -414,7 +414,6 @@ export class GameScene extends Phaser.Scene {
       }
 
       // Player label
-      const label = playerIndex === 0 ? 'P1' : 'P2';
       const labelX = isLeft ? barX - 2 : barX + barWidth + 2;
 
       // Draw label background

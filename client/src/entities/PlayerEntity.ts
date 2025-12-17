@@ -8,7 +8,6 @@ const PX = 4;
 export class PlayerEntity {
   private scene: Phaser.Scene;
   private serverState: any;
-  private isLocal: boolean;
   private effects: EffectsManager;
 
   // Container for all player graphics
@@ -34,7 +33,6 @@ export class PlayerEntity {
   constructor(scene: Phaser.Scene, serverState: any, isLocal: boolean, effects: EffectsManager) {
     this.scene = scene;
     this.serverState = serverState;
-    this.isLocal = isLocal;
     this.effects = effects;
 
     // Set color palette based on player
@@ -225,14 +223,14 @@ export class PlayerEntity {
     g: Phaser.GameObjects.Graphics,
     ox: number,
     oy: number,
-    w: number,
-    h: number,
+    _w: number,
+    _h: number,
     main: number,
     light: number,
     dark: number,
     skin: number,
     state: string,
-    frame: number,
+    _frame: number,
     alpha: number
   ) {
     // Helper to draw a pixel
