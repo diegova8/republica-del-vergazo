@@ -202,7 +202,12 @@ export class GameScene extends Phaser.Scene {
 
   private async connectToServer() {
     try {
-      const serverUrl = (import.meta as any).env?.VITE_SERVER_URL || 'ws://localhost:3001';
+      // Auto-detect WebSocket URL based on current host
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const serverUrl = isLocal
+        ? 'ws://localhost:3001'
+        : `${protocol}//${window.location.host}`;
       this.client = new Colyseus.Client(serverUrl);
 
       this.statusText.setText('SEARCHING...');

@@ -2,6 +2,7 @@ import { Server } from '@colyseus/core';
 import { WebSocketTransport } from '@colyseus/ws-transport';
 import express from 'express';
 import { createServer } from 'http';
+import path from 'path';
 import { GameRoom } from './rooms/GameRoom';
 
 const port = Number(process.env.PORT) || 3001;
@@ -23,6 +24,18 @@ app.use((req, res, next) => {
 // Health check endpoint
 app.get('/health', (_, res) => {
   res.json({ status: 'ok' });
+});
+
+// Serve static client files in production
+const clientPath = path.join(__dirname, '../../client/dist');
+app.use(express.static(clientPath));
+
+// SPA fallback - serve index.html for all non-API routes
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/colyseus') || req.path === '/health') {
+    return next();
+  }
+  res.sendFile(path.join(clientPath, 'index.html'));
 });
 
 const httpServer = createServer(app);
