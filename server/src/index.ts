@@ -1,0 +1,29 @@
+import { Server } from '@colyseus/core';
+import { WebSocketTransport } from '@colyseus/ws-transport';
+import express from 'express';
+import { createServer } from 'http';
+import { GameRoom } from './rooms/GameRoom';
+
+const port = Number(process.env.PORT) || 3001;
+
+const app = express();
+app.use(express.json());
+
+// Health check endpoint
+app.get('/health', (_, res) => {
+  res.json({ status: 'ok' });
+});
+
+const httpServer = createServer(app);
+
+const gameServer = new Server({
+  transport: new WebSocketTransport({ server: httpServer }),
+});
+
+// Register game room
+gameServer.define('game', GameRoom);
+
+httpServer.listen(port, () => {
+  console.log(`🎮 Game server running on http://localhost:${port}`);
+  console.log(`📡 WebSocket available at ws://localhost:${port}`);
+});
